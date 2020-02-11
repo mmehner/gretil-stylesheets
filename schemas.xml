@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
+  <uri resource="html.xsl" uri="xslt-relax-ng/xslt.rnc"/>
+  <uri resource="plain-text.xsl" uri="xslt-relax-ng/xslt.rnc"/>
+  <uri resource="pAda-index.xsl" uri="xslt-relax-ng/xslt.rnc"/>
+  <uri resource="identity.xsl" uri="xslt-relax-ng/xslt.rnc"/>
+</locatingRules>
