@@ -313,6 +313,12 @@
     <xsl:value-of select="$n"/>
   </xsl:template>
 
+  <xsl:template match="trailer">
+    <xsl:value-of select="$n"/>
+    <xsl:apply-templates/>
+    <xsl:value-of select="$n"/>
+  </xsl:template>
+
   <xsl:template match="p">
     <xsl:value-of select="$n"/>
     <xsl:apply-templates/>

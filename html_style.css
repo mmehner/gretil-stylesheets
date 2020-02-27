@@ -57,7 +57,6 @@ q:after {content: "«";}
 
 div.wapp:hover  span.lem {background-color: #FFFFCC;}
 
-
 @media screen and (max-width: 800px) {
     body {padding: 0px;}
     .column {width: 100%;}
@@ -72,4 +71,3 @@ div.wapp:hover  span.lem {background-color: #FFFFCC;}
 #toc_container {background: #f9f9f9 none repeat scroll 0 0; border: 1px solid #aaa; display: table; font-size: 95%; margin-bottom: 1em; padding: 1em; width: auto;}
 .toc_title {font-weight: 700; text-align: center;}	  
 #toc_container li, #toc_container ul, #toc_container ul li{list-style: outside none none !important; padding-left: .5em;}
-

@@ -22,80 +22,7 @@
 	  <xsl:value-of select="TEI/teiHeader/fileDesc/titleStmt/title"/> (GRETIL)
 	</title>
 	<style>
-	  @font-face {
-	  font-family: LinuxLibertineDisplay0Regular, times, serif;
-	  src: url(fonts/LinLibertine_DR.woff);
-	  }
-	  * {box-sizing: border-box;}
-	  body {background-color: #FFFFFF; font-family: 'LinuxLibertineDisplayORegular'; font-weight: normal; font-style: normal; padding: 20px 40px 20px;}
-
-	  ul {list-style: circle;}
-	  
-	  ul.dash {list-style: none; margin-left: .5em; padding-left: .5em;}
-	  ul.dash <xsl:text disable-output-escaping='yes'>&gt;</xsl:text> li:before {display: inline-block; content: "–"; width: 1em; margin-left: 0em;}
-
-	  a:link {color: black; text-decoration: underline;}
-	  
-	  a:visited {color: black; text-decoration: underline;}
-	  
-	  a:hover {color: black; text-decoration: none;}
-	  
-	  a:active {color: black; text-decoration: underline;}
-	  
-	  h4 {margin-bottom: 0px;}
-	  mark {background-color: #FFFFCC;}
-	  q:before {content: "»";}
-	  q:after {content: "«";}
-	  .stdindent {padding-left: .5em; padding-right: .5em;}
-	  .noindent {padding: 0px;}
-	  .comm {padding-left: 1em; padding-right: 1em;}
-	  .app {width: 80%; text-align: right; font-size: 13px; padding-left: 1em;}
-	  .lem {display:inline-block;}
-	  .ref {font-size: 13px; padding: inherit;}
-	  .lb {font-weight: bold; font-size: 13px;}
-	  .lb:before {content: "["}
-	  .lb:after {content: "]"}
-	  .pb {font-weight: bold; font-size: 13px;}
-	  .pb:before {content: " ["}
-	  .pb:after {content: "] "}
-	  .note {font-weight: bold; font-size: 13px;}
-	  .note:before {content: " ["}
-	  .note:after {content: "] "}
-	  .subhead {font-weight: bold; font-size: 13px;}
-	  .appnote {font-size: 13px;}
-	  .appnote:before {content: " ["}
-	  .appnote:after {content: "] "}
-	  .hi {font-style: italic}
-	  .sic:before {content: "†"}
-	  .sic:after {content: "†"}
-	  .corr {color: #008000;}
-	  .supplied {color: #1E90FF;}
-	  .surplus {color: #ff3333;}
-	  .unclear {color: #D2B48C;}
-
-	  .row:after {content: ""; display: table; clear: both;}
-	  .column {float: left; width: 50%; padding-left: .5em; padding-right: .5em;}
-	  .analysis {font-size: 13px; color: #0066ff; padding-left: .5em; padding-right: .5em; padding-top: .1em;}
-	  .analysis:before {content: "["}
-	  .analysis:after {content: "]"}
-	  
-	  div.wapp:hover  span.lem {background-color: #FFFFCC;}
-	  
-	  
-	  @media screen and (max-width: 800px) {
-	  body {padding: 0px;}
-	  .column {width: 100%;}
-	  .analysis {width: 100%;}
-	  }
-
-	  @media screen and (max-width: 1100px) {
-	  body {padding: 0px;}
-	  .app {width: 90%;}
-	  }
-	  
-	  #toc_container {background: #f9f9f9 none repeat scroll 0 0; border: 1px solid #aaa; display: table; font-size: 95%; margin-bottom: 1em; padding: 1em; width: auto;}
-	  .toc_title {font-weight: 700; text-align: center;}	  
-	  #toc_container li, #toc_container ul, #toc_container ul li{list-style: outside none none !important; padding-left: .5em;}
+	  <xsl:value-of select="unparsed-text('html_style.css')" disable-output-escaping="yes"/>
 	</style> 
       </head>
       <body>
@@ -673,6 +600,11 @@
 	</xsl:element>
       </xsl:otherwise>
       </xsl:choose>
+  </xsl:template>
+
+  <!-- trailer -->
+  <xsl:template match="trailer">
+    <p><xsl:apply-templates/></p>
   </xsl:template>
 
   <!-- p / lg -->
