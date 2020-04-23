@@ -198,7 +198,7 @@
     </p>
     
     <xsl:choose>
-      <xsl:when test="count(fileDesc/sourceDesc/biblStruct | fileDesc/sourceDesc/bibl | fileDesc/sourceDesc/listWit/witness) = 1">
+      <xsl:when test="count(fileDesc/sourceDesc/biblStruct | fileDesc/sourceDesc/bibl | fileDesc/sourceDesc/listWit/witness | fileDesc/sourceDesc/list/item) = 1">
 	<xsl:element name="h4">
 	  <if test="fileDesc/sourceDesc/@xml:id">
 	    <xsl:attribute  name="id">
@@ -209,10 +209,10 @@
 	</xsl:element>
 	<xsl:element name="ul">
 	  <xsl:attribute name="class">dash</xsl:attribute>
-	  <xsl:apply-templates select="fileDesc/sourceDesc/biblStruct | fileDesc/sourceDesc/bibl | fileDesc/sourceDesc/listWit/witness"/>
+	  <xsl:apply-templates select="fileDesc/sourceDesc/biblStruct | fileDesc/sourceDesc/bibl | fileDesc/sourceDesc/listWit/witness | fileDesc/sourceDesc/list/item"/>
 	</xsl:element>
       </xsl:when>
-      <xsl:when test="count(fileDesc/sourceDesc/biblStruct | fileDesc/sourceDesc/bibl | fileDesc/sourceDesc/listWit/witness) > 1">
+      <xsl:when test="count(fileDesc/sourceDesc/biblStruct | fileDesc/sourceDesc/bibl | fileDesc/sourceDesc/listWit/witness | fileDesc/sourceDesc/list/item) > 1">
 	<xsl:element name="h4">
 	  <if test="fileDesc/sourceDesc/@xml:id">
 	    <xsl:attribute  name="id">
@@ -223,7 +223,7 @@
 	</xsl:element>
 	<xsl:element name="ul">
 	  <xsl:attribute name="class">dash</xsl:attribute>
-	  <xsl:apply-templates select="fileDesc/sourceDesc/biblStruct | fileDesc/sourceDesc/bibl | fileDesc/sourceDesc/listWit/witness"/>
+	  <xsl:apply-templates select="fileDesc/sourceDesc/biblStruct | fileDesc/sourceDesc/bibl | fileDesc/sourceDesc/listWit/witness | fileDesc/sourceDesc/list/item"/>
 	</xsl:element>
       </xsl:when>
       <xsl:otherwise>
@@ -406,6 +406,21 @@
 	  <xsl:value-of select="@xml:id"/><xsl:text>: </xsl:text>
 	</xsl:element>
       </xsl:if>
+      <xsl:choose>
+	<xsl:when test="substring(normalize-space(.),string-length(normalize-space(.))) = string('.')"><!-- full stop at the end of the text node -->
+	  <xsl:apply-templates/>
+	</xsl:when>
+	<xsl:otherwise>
+	  <xsl:apply-templates/>
+	  <xsl:text>.</xsl:text><!-- no full stop in text node and therefore supplied -->
+	</xsl:otherwise>
+      </xsl:choose>
+    </xsl:element>
+  </xsl:template>
+
+  <!-- p in sourceDesc -->
+  <xsl:template match="sourceDesc/p">
+    <xsl:element name="li">
       <xsl:choose>
 	<xsl:when test="substring(normalize-space(.),string-length(normalize-space(.))) = string('.')"><!-- full stop at the end of the text node -->
 	  <xsl:apply-templates/>

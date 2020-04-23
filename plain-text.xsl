@@ -57,11 +57,11 @@
     <xsl:value-of select="$n"/><xsl:value-of select="$n"/>
     
     <xsl:choose>
-      <xsl:when test="count(fileDesc/sourceDesc/biblStruct | fileDesc/sourceDesc/bibl | fileDesc/sourceDesc/listWit/witness ) = 1">
+      <xsl:when test="count(fileDesc/sourceDesc/biblStruct | fileDesc/sourceDesc/bibl | fileDesc/sourceDesc/listWit/witness | fileDesc/sourceDesc/list/item) = 1">
 	<xsl:text>## Source: </xsl:text>
 	<xsl:apply-templates select="fileDesc/sourceDesc"/>
       </xsl:when>
-      <xsl:when test="count(fileDesc/sourceDesc/biblStruct | fileDesc/sourceDesc/bibl | fileDesc/sourceDesc/listWit/witness) > 1">
+      <xsl:when test="count(fileDesc/sourceDesc/biblStruct | fileDesc/sourceDesc/bibl | fileDesc/sourceDesc/listWit/witness | fileDesc/sourceDesc/list/item) > 1">
 	<xsl:text>## Sources: </xsl:text>
 	<xsl:apply-templates select="fileDesc/sourceDesc"/>
       </xsl:when>
@@ -118,7 +118,7 @@
   </xsl:template>
 
   <xsl:template match="TEI/teiHeader//item">
-    <xsl:text>   - </xsl:text><xsl:value-of select="."/><xsl:value-of select="$n"/>
+    <xsl:text>   - </xsl:text><xsl:apply-templates/><xsl:value-of select="$n"/>
   </xsl:template>
 
   <!-- source-templates -->

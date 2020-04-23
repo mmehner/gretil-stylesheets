@@ -56,17 +56,17 @@
 
   <xsl:template match="t:title">
     <li>
-       <xsl:element name="a">
-	 <xsl:attribute name="href"><xsl:value-of select="ancestor::t:TEI/@xml:id"/><xsl:text>.htm</xsl:text></xsl:attribute>
-	 <xsl:value-of select="."/>
-       </xsl:element>
+      <xsl:element name="a">
+	<xsl:attribute name="href"><xsl:value-of select="ancestor::t:TEI/@xml:id"/><xsl:text>.htm</xsl:text></xsl:attribute>
+	<xsl:value-of select="."/>
+      </xsl:element>
     </li>
   </xsl:template>
   
   <!-- plaintext-function -->
   <xsl:function name="mm:plaintext">
     <xsl:param name="pAda-node"/>
-     <xsl:apply-templates select="$pAda-node" mode="serialize"/>
+    <xsl:apply-templates select="$pAda-node" mode="serialize"/>
   </xsl:function>
 
   <!-- sortkey-function for Sanskrit-->
@@ -192,7 +192,7 @@
   <xsl:template match="t:seg" mode="serialize">
     <xsl:apply-templates mode="serialize"/>
   </xsl:template>
-    <xsl:template match="t:app" mode="serialize">
+  <xsl:template match="t:app" mode="serialize">
     <xsl:apply-templates mode="serialize"/>
   </xsl:template>
 
