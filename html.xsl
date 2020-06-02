@@ -49,13 +49,17 @@
     </xsl:copy>
   </xsl:template>
 
+  <!-- skips -->
   <!-- general skips -->
-  <xsl:template match="email | orig | cit | s | seg">
+  <xsl:template match="email">
     <xsl:apply-templates select="node()" />
   </xsl:template>
 
-  <!-- general skips for elements with attributes-->
-  
+  <!-- qualified skips -->
+  <xsl:template match="div[not(@*)] | orig[not(@rend)] | s[not(@rend)] | seg[not(@rend)] | title[not(@rend)] | name[not(@rend)] | foreign[not(@rend)]">
+    <xsl:apply-templates select="node()" />
+  </xsl:template>
+
   <!-- generate ids for toc -->
   <xsl:template match="div[@type]">
     <xsl:element name="{local-name()}">
@@ -171,6 +175,59 @@
     </xsl:if>
   </xsl:template>
 
+  <!-- named templates -->
+  <!-- names in respStmt -->
+  <xsl:template name="names">
+    <xsl:choose>
+      <xsl:when test="@xml:id">
+	<xsl:element name="span">
+	  <xsl:attribute name="id"><xsl:value-of select="@xml:id"/></xsl:attribute>
+	  <xsl:value-of select="normalize-space(.)"/>
+	</xsl:element>
+      </xsl:when>
+      <xsl:otherwise>
+	<xsl:value-of select="normalize-space(.)"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <!-- name lists inside for-each -->
+  <xsl:template name="nameslist">
+    <xsl:choose>
+      <xsl:when test="position() > 1 and position() = last() - 1">
+	<xsl:text>, and </xsl:text>
+      </xsl:when>
+      <xsl:when test="position() = last() - 1">
+	<xsl:text> and </xsl:text>
+      </xsl:when>
+      <xsl:when test="position() = last()"/>
+      <xsl:otherwise>
+	<xsl:text>, </xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  
+  <!-- add resp-->
+  <xsl:template name="addresp">
+    <xsl:text> (</xsl:text>
+    <xsl:choose>
+      <xsl:when test="starts-with(@resp, '#')">
+	<xsl:variable name="idkey" select="substring-after(@resp, '#')"/>
+	<xsl:element name="a">
+	  <xsl:attribute name="href"><xsl:value-of select="@resp"/></xsl:attribute>
+	  <xsl:attribute name="title">
+	    <xsl:value-of select="//*[@xml:id = $idkey]/normalize-space()"/>
+	  </xsl:attribute>
+	  <xsl:value-of select="substring-after(@resp, '#')"/>
+	</xsl:element>
+      </xsl:when>
+      <xsl:otherwise>
+	<xsl:value-of select="@resp"/>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text>)</xsl:text>
+  </xsl:template>
 
   <!-- header -->
   <xsl:template match="teiHeader">
@@ -182,15 +239,21 @@
     <xsl:element name="p">
       <xsl:attribute name="class">noindent</xsl:attribute>
       <b>Data entry: </b>
-      <xsl:apply-templates select="fileDesc/titleStmt/respStmt[child::resp[contains(.,'data entry')]][child::name]"/>
+      <xsl:for-each select="fileDesc/titleStmt/respStmt/name[preceding-sibling::resp[contains(.,'data entry')]]">
+	<xsl:call-template name="names"/>
+	<xsl:call-template name="nameslist"/>
+      </xsl:for-each>
     </xsl:element>
-
     
     <xsl:if test="fileDesc/titleStmt/respStmt/resp[contains(.,'contribution to GRETIL')]">
-      <p class="noindent">
+      <xsl:element name="p">
+	<xsl:attribute name="class">noindent</xsl:attribute>
 	<b>Contribution: </b>
-	<xsl:apply-templates select="fileDesc/titleStmt/respStmt[child::resp[contains(.,'contribution to GRETIL')]][child::name]"/>
-      </p>
+	<xsl:for-each select="fileDesc/titleStmt/respStmt/name[preceding-sibling::resp[contains(.,'contribution to GRETIL')]]">
+	  <xsl:call-template name="names"/>
+	  <xsl:call-template name="nameslist"/>
+	</xsl:for-each>
+      </xsl:element>
     </xsl:if>
 
     <p class="noindent">
@@ -283,13 +346,20 @@
 	<p class="noindent"><b>Interpretive markup: </b>none</p>
       </xsl:otherwise>
     </xsl:choose>
+
+    <!-- custom interpretive markup when @xml:id is given to element -->
+    <xsl:if test="encodingDesc/editorialDecl/interpretation[@xml:id]">
+      <xsl:apply-templates select="encodingDesc/editorialDecl/interpretation[@xml:id]"/>
+    </xsl:if>
     
+    <!-- notes -->
     <xsl:if test="fileDesc/notesStmt/note[text()] | fileDesc/notesStmt/note/p[text()]">
       <h4>Notes:</h4>
       <xsl:apply-templates select="fileDesc/notesStmt"/>
     </xsl:if>
   </xsl:template>
 
+  <!-- head sub-templates -->
   <!-- notes in header -->
   <xsl:template match="TEI/teiHeader/fileDesc/notesStmt/note">
     <xsl:choose>
@@ -298,7 +368,6 @@
       </xsl:when>
       <xsl:otherwise>
 	<xsl:element name="p">
-	  <xsl:attribute name="class">stdindent</xsl:attribute>
 	  <xsl:apply-templates/>
 	</xsl:element>
       </xsl:otherwise>
@@ -308,8 +377,20 @@
   <!-- licence -->
   <xsl:template match="availability/licence">
     <xsl:element name="p">
-      <xsl:attribute name="class">stdindent</xsl:attribute>
       <a href="{@target}"><xsl:value-of select="."/></a>
+    </xsl:element>
+  </xsl:template>
+
+  <!-- custom interpretive markup -->
+  <xsl:template match="interpretation[@xml:id]">
+    <xsl:element name="div">
+      <xsl:attribute name="id">
+	<xsl:value-of select="@xml:id"/>
+      </xsl:attribute>
+      <h4>Custom interpretive markup<!-- add resp --><xsl:if test="@resp">
+	<xsl:call-template name="addresp"/>
+      </xsl:if>:</h4>
+      <xsl:apply-templates/>
     </xsl:element>
   </xsl:template>
   
@@ -359,28 +440,6 @@
   
   <!-- source-templates -->
   <!-- names -->
-  <xsl:template match="respStmt">
-    <xsl:choose>
-      <xsl:when test="count(child::name) = 1">
-	<xsl:apply-templates select="./name"/>
-      </xsl:when>
-      <xsl:when test="count(child::name) = 2">
-	<xsl:apply-templates select="./name[1]"/>
-	<xsl:text> and </xsl:text>
-	<xsl:apply-templates select="./name[2]"/>
-      </xsl:when>
-      <xsl:otherwise>
-	<xsl:apply-templates select="./name[1]"/>
-	<xsl:for-each select="./name[count(preceding-sibling::name) > 0][count(following-sibling::name) > 0]">
-	  <xsl:text>, </xsl:text>
-	  <xsl:apply-templates select="."/>
-	</xsl:for-each>
-	<xsl:text>, and </xsl:text>
-	<xsl:apply-templates select="./name[count(following-sibling::name) = 0]"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
   <xsl:template match="name">
     <xsl:choose>
       <xsl:when test="@xml:id">
@@ -586,6 +645,10 @@
 
   <!-- text -->
   <xsl:template match="text">
+    <xsl:if test="front">
+      <h2>Frontmatter</h2>
+      <xsl:apply-templates select="front/node()"/>
+    </xsl:if>
     <h2>Text</h2>
     <xsl:element name="div">
       <xsl:copy-of select="@xml:lang"/>
@@ -695,13 +758,16 @@
 
   <xsl:template match="p|lg" mode="content">
     <xsl:element name="p">
-      <xsl:attribute name="class">
-	<xsl:text>stdindent</xsl:text>
-      </xsl:attribute>
       <!-- add ids if specified -->
       <xsl:if test="@xml:id">
 	<xsl:attribute name="id">
 	  <xsl:value-of select="@xml:id"/>
+	</xsl:attribute>
+      </xsl:if>
+      <!-- add custom rend if specified -->
+      <xsl:if test="@rend">
+	<xsl:attribute name="class">
+	  <xsl:value-of select="@rend"/>
 	</xsl:attribute>
       </xsl:if>
       <xsl:apply-templates/>
@@ -718,11 +784,71 @@
     </xsl:element>
   </xsl:template>
 
-  <xsl:template match="lg/l">
-    <xsl:apply-templates/>
-    <xsl:if test="following-sibling::l">
-      <br/>
-    </xsl:if>
+  <xsl:template match="l">
+    <xsl:choose>
+      <!-- grouped lines and lines inside p or q -->
+      <xsl:when test="parent::lg or ancestor::p or ancestor::q">
+	<xsl:choose>
+	  <!-- add custom rend if specified -->
+	  <xsl:when test="@rend">
+	    <xsl:element name="span">
+	      <xsl:attribute name="class">
+		<xsl:value-of select="@rend"/>
+	      </xsl:attribute>
+	      <xsl:apply-templates/>
+	    </xsl:element>
+	    <xsl:if test="following-sibling::l">
+	      <xsl:element name="br"/>
+	    </xsl:if>
+	  </xsl:when>
+	  <xsl:otherwise>
+	    <xsl:apply-templates/>
+	    <xsl:if test="following-sibling::l">
+	      <xsl:element name="br"/>
+	    </xsl:if>
+	  </xsl:otherwise>
+	</xsl:choose>
+      </xsl:when>
+      <!-- singe lines -->
+      <xsl:otherwise>
+	<xsl:choose>
+	  <!-- add custom rend if specified -->
+	  <xsl:when test="@rend">
+	    <xsl:element name="p">
+	      <xsl:attribute name="class">
+		<xsl:value-of select="@rend"/>
+	      </xsl:attribute>
+	      <xsl:apply-templates/>
+	      <!-- print id if specified -->
+	      <xsl:if test="@xml:id">
+		<xsl:text> </xsl:text>
+		<xsl:element name="span">
+		  <xsl:attribute name="class">ref</xsl:attribute>
+		  <xsl:if test="self::p"><xsl:text>(</xsl:text></xsl:if>
+		  <xsl:call-template name="id2inlineref"/>
+		  <xsl:if test="self::p"><xsl:text>)</xsl:text></xsl:if>
+		</xsl:element>
+	      </xsl:if>
+	    </xsl:element>
+	  </xsl:when>
+	  <xsl:otherwise>
+	    <xsl:element name="p">
+	      <xsl:apply-templates/>
+	      <!-- print id if specified -->
+	      <xsl:if test="@xml:id">
+		<xsl:text> </xsl:text>
+		<xsl:element name="span">
+		  <xsl:attribute name="class">ref</xsl:attribute>
+		  <xsl:if test="self::p"><xsl:text>(</xsl:text></xsl:if>
+		  <xsl:call-template name="id2inlineref"/>
+		  <xsl:if test="self::p"><xsl:text>)</xsl:text></xsl:if>
+		</xsl:element>
+	      </xsl:if>
+	    </xsl:element>
+	  </xsl:otherwise>
+	</xsl:choose>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <!-- add changed IDs inline -->
@@ -885,23 +1011,7 @@
 	<xsl:apply-templates/>
 	<!-- add resp -->
 	<xsl:if test="@resp">
-	  <xsl:text> (</xsl:text>
-	  <xsl:choose>
-	    <xsl:when test="starts-with(@resp, '#')">
-	      <xsl:variable name="idkey" select="substring-after(@resp, '#')"/>
-	      <xsl:element name="a">
-		<xsl:attribute name="href"><xsl:value-of select="@resp"/></xsl:attribute>
-		<xsl:attribute name="title">
-		  <xsl:value-of select="//*[@xml:id = $idkey]/normalize-space()"/>
-		</xsl:attribute>
-		<xsl:value-of select="substring-after(@resp, '#')"/>
-	      </xsl:element>
-	    </xsl:when>
-	    <xsl:otherwise>
-	      <xsl:value-of select="@resp"/>
-	    </xsl:otherwise>
-	  </xsl:choose>
-	  <xsl:text>)</xsl:text>
+	  <xsl:call-template name="addresp"/>
 	</xsl:if>
       </xsl:element>
     </xsl:for-each>
@@ -919,6 +1029,7 @@
     </xsl:choose>
   </xsl:template>
 
+  <!-- interpretation -->
   <!-- simple corrections -->
   <xsl:template match="corr">
     <xsl:element name="span">
@@ -1068,24 +1179,9 @@
     <xsl:element name="span">
       <xsl:attribute name="class">note</xsl:attribute>
       <xsl:apply-templates/>
+      <!-- add resp -->
       <xsl:if test="@resp">
-	<xsl:text> (</xsl:text>
-	<xsl:choose>
-	  <xsl:when test="starts-with(@resp, '#')">
-	    <xsl:variable name="idkey" select="substring-after(@resp, '#')"/>
-	    <xsl:element name="a">
-	      <xsl:attribute name="href"><xsl:value-of select="@resp"/></xsl:attribute>
-	      <xsl:attribute name="title">
-		<xsl:value-of select="//*[@xml:id = $idkey]/normalize-space()"/>
-	      </xsl:attribute>
-	      <xsl:value-of select="substring-after(@resp, '#')"/>
-	    </xsl:element>
-	  </xsl:when>
-	  <xsl:otherwise>
-	    <xsl:value-of select="@resp"/>
-	  </xsl:otherwise>
-	</xsl:choose>
-	<xsl:text>)</xsl:text>
+	<xsl:call-template name="addresp"/>
       </xsl:if>
     </xsl:element>
   </xsl:template>
@@ -1127,34 +1223,60 @@
   
   <!-- quotes -->
   <xsl:template match="q">
-    <xsl:element name="q">
-      <xsl:apply-templates/>
-    </xsl:element>
+    <xsl:choose>
+      <!-- inside p or -->
+      <xsl:when test="ancestor::p or parent::cit">
+	<xsl:element name="q">
+	  <!-- add custom rend if specified -->
+	  <xsl:if test="@rend">
+	    <xsl:attribute name="class">
+	      <xsl:value-of select="@rend"/>
+	    </xsl:attribute>
+	  </xsl:if>
+	  <xsl:apply-templates/>
+	</xsl:element>
+      </xsl:when>
+      <!-- unnested -->
+      <xsl:otherwise>
+	<xsl:element name="p">
+	  <xsl:element name="q">
+	    <!-- add custom rend if specified -->
+	    <xsl:if test="@rend">
+	      <xsl:attribute name="class">
+		<xsl:value-of select="@rend"/>
+	      </xsl:attribute>
+	    </xsl:if>
+	    <xsl:apply-templates/>
+	  </xsl:element>
+	</xsl:element>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
+  <xsl:template match="cit">
+    <xsl:choose>
+      <!-- inside p or -->
+      <xsl:when test="ancestor::p">
+	<xsl:apply-templates/>
+      </xsl:when>
+      <!-- unnested -->
+      <xsl:otherwise>
+	<xsl:element name="p">
+	  <xsl:apply-templates/>
+	</xsl:element>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  
   <!-- hi -->
-  <!-- without further specification -->
-  <xsl:template match="hi">
+  <xsl:template match="hi[not(@rend)]">
     <xsl:element name="span">
       <xsl:attribute name="class">hi</xsl:attribute>
       <xsl:apply-templates/>
     </xsl:element>
   </xsl:template>
   
-  <!-- explicitly bold -->
-  <xsl:template match="hi[@rend[.='bold' or .='textbf' or .='bf' or .='b']]">
-    <xsl:element name="b">
-      <xsl:apply-templates/>
-    </xsl:element>
-  </xsl:template>
-
-  <!-- explicitly italic -->
-  <xsl:template match="hi[@rend[.='italic' or .='textit' or .='it' or .='i']]">
-    <xsl:element name="i">
-      <xsl:apply-templates/>
-    </xsl:element>
-  </xsl:template>
-
   <!-- explicitly superscript in orig -->
    <xsl:template match="orig[@rend[.='superscript' or .='super' or .='sup']]">
      <xsl:element name="sup">
@@ -1163,10 +1285,20 @@
   </xsl:template>
 
   <!-- pratīkas -->
-  <xsl:template match="mentioned">
+  <xsl:template match="mentioned[not(@rend)]">
     <xsl:element name="b">
       <xsl:apply-templates/>
     </xsl:element>
   </xsl:template>
-  
+
+  <!-- rendition for otherwise unrendered elements, cf. qualified skips -->
+  <xsl:template match=".[self::hi or self::mentioned or self::orig or self::s or self::seg or self::title or self::name or self::foreign][@rend]">
+    <xsl:element name="span">
+      <xsl:attribute name="class">
+	<xsl:value-of select="@rend"/>
+      </xsl:attribute>
+      <xsl:apply-templates/>
+    </xsl:element>
+  </xsl:template>
+
 </xsl:stylesheet>

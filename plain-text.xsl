@@ -33,7 +33,7 @@
     <xsl:value-of select="$n"/>
     <xsl:text># Text</xsl:text>
     <xsl:value-of select="$n"/>
-    <xsl:apply-templates select="TEI/text"/>
+    <xsl:apply-templates select="TEI/text/body"/>
   </xsl:template>
 
   <!-- header -->
