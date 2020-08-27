@@ -302,7 +302,8 @@
   <!-- text -->
   <!-- normalize output on all text nodes -->
   <xsl:template match="TEI/text//text()">
-    <xsl:value-of select="lower-case(replace(., '\s+', ' '))"/>
+    <xsl:value-of select="lower-case(replace(replace(., '\s+', ' '),
+			  '[ẖḫ]', 'ḥ'))"/>
   </xsl:template>
 
   <!--add whitespace for different contexts -->

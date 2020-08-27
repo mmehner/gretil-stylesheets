@@ -689,6 +689,13 @@
   <xsl:template match="p|lg">
     <xsl:variable name="correspkey" select="concat('#', @xml:id )"/>
     <xsl:choose>
+      <!-- when nested in quotes: skip all further checks, but insert linebreak after each lg except for the last -->
+      <xsl:when test="ancestor::q">
+	<xsl:apply-templates/>
+	<xsl:if test="following-sibling::lg">
+	  <xsl:element name="br"/>
+	</xsl:if>
+      </xsl:when>
       <!-- look for matching corresp-->
       <xsl:when test="//note[@type='analysis']/@corresp = $correspkey">
 	<xsl:element name="div">

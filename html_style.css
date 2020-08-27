@@ -3,7 +3,7 @@
     src: url(fonts/LinLibertine_DR.woff);
 }
 * {box-sizing: border-box;}
-body {background-color: #FFFFFF; font-family: 'LinuxLibertineDisplayORegular'; font-weight: normal; font-style: normal; font-size: 18px; padding: 20px 100px 20px; width: 1400px;}
+body {background-color: #FFFFFF; font-family: 'LinuxLibertineDisplayORegular'; font-weight: normal; font-style: normal; font-size: 18px; padding: 20px 100px 20px; width: 1600px;}
 
 ul {list-style: circle;}
 
@@ -24,20 +24,20 @@ q:after {content: "«";}
 
 .noindent {padding: 0px;}
 .comm {padding-left: 1em; padding-right: 1em;}
-.app {width: 80%; text-align: right; font-size: 13px; padding-left: 1em;}
+.app {width: 80%; text-align: right; font-size: 14px; padding-left: 1em;}
 .lem {display:inline-block;}
-.ref {font-size: 13px; padding: inherit;}
-.lb {font-weight: bold; font-size: 13px;}
+.ref {font-size: 14px; padding: inherit;}
+.lb {font-weight: bold; font-size: 14px;}
 .lb:before {content: "["}
 .lb:after {content: "]"}
-.pb {font-weight: bold; font-size: 13px;}
+.pb {font-weight: bold; font-size: 14px;}
 .pb:before {content: " ["}
 .pb:after {content: "] "}
-.note {font-weight: bold; font-size: 13px;}
+.note {font-weight: bold; font-size: 14px;}
 .note:before {content: " ["}
 .note:after {content: "] "}
-.subhead {font-weight: bold; font-size: 13px;}
-.appnote {font-size: 13px;}
+.subhead {font-weight: bold; font-size: 14px;}
+.appnote {font-size: 14px;}
 .appnote:before {content: " ["}
 .appnote:after {content: "] "}
 .hi {font-style: italic}
@@ -57,7 +57,7 @@ q:after {content: "«";}
 
 .row:after {content: ""; display: table; clear: both;}
 .column {float: left; width: 50%; padding-left: .5em; padding-right: .5em;}
-.analysis {font-size: 13px; color: #0066ff; padding-left: .5em; padding-right: .5em; padding-top: .1em;}
+.analysis {font-size: 14px; color: #0066ff; padding-left: .5em; padding-right: .5em; padding-top: .1em;}
 .analysis:before {content: "["}
 .analysis:after {content: "]"}
 
@@ -69,12 +69,12 @@ div.wapp:hover  span.lem {background-color: #FFFFCC;}
     .analysis {width: 100%;}
 }
 
-@media screen and (max-width: 1100px) {
+@media screen and (max-width: 1200px) {
     body {padding: 10px;}
     .app {width: 90%;}
 }
 
-@media only screen and (max-width: 1400px) {
+@media only screen and (max-width: 1600px) {
     body {width: auto; padding: 20px;}
 }
 
