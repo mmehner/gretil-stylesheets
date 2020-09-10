@@ -90,6 +90,13 @@
       <xsl:value-of select="$n"/>
       <xsl:apply-templates select="fileDesc/notesStmt/note"/>
     </xsl:if>
+
+    <xsl:if test="revisionDesc//change[text()]">
+      <xsl:value-of select="$n"/>
+      <xsl:text>## Revisions:</xsl:text>
+      <xsl:value-of select="$n"/>
+      <xsl:apply-templates select="revisionDesc//change"/>
+    </xsl:if>
   </xsl:template>
 
   <!-- notes in header -->
@@ -119,6 +126,15 @@
 
   <xsl:template match="TEI/teiHeader//item">
     <xsl:text>   - </xsl:text><xsl:apply-templates/><xsl:value-of select="$n"/>
+  </xsl:template>
+
+  <!-- revisions -->
+  <xsl:template match="revisionDesc//change">
+    <xsl:text>   - </xsl:text>
+    <xsl:value-of select="@when-iso"/>
+    <xsl:text>: </xsl:text>
+    <xsl:value-of select="."/>
+    <xsl:value-of select="$n"/>
   </xsl:template>
 
   <!-- source-templates -->

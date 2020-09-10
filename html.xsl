@@ -357,6 +357,15 @@
       <h4>Notes:</h4>
       <xsl:apply-templates select="fileDesc/notesStmt"/>
     </xsl:if>
+
+    <!-- revisions -->
+    <xsl:if test="revisionDesc//change[text()]">
+      <h4>Revisions:</h4>
+      <xsl:element name="ul">
+	<xsl:attribute name="class">dash</xsl:attribute>
+        <xsl:apply-templates select="revisionDesc//change"/>
+      </xsl:element>
+    </xsl:if>
   </xsl:template>
 
   <!-- head sub-templates -->
@@ -391,6 +400,15 @@
 	<xsl:call-template name="addresp"/>
       </xsl:if>:</h4>
       <xsl:apply-templates/>
+    </xsl:element>
+  </xsl:template>
+
+  <!-- revisions -->
+  <xsl:template match="revisionDesc//change">
+    <xsl:element name="li">
+      <xsl:value-of select="@when-iso"/>
+      <xsl:text>: </xsl:text>
+      <xsl:value-of select="."/>
     </xsl:element>
   </xsl:template>
   
